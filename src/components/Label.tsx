@@ -9,8 +9,7 @@ export const Label: FC<Label> = ({
 }: LabelProps) => {
   return (
     <div>
-      <h4>{name}</h4>
-      <span>{`# ${threadsTotal}`}</span>
+      <span>{`${name}: ${threadsTotal}`}</span>
     </div>
   );
 };

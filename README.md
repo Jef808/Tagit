@@ -2,14 +2,22 @@
 
 Easy-to-use interface for managing labels and filters for a Gmail inbox.
 
-<!-- ## Installation -->
+## Installation
 
-<!-- Instructions on how to install and set up the project. -->
+After setting up oauth2 credentials:
 
-<!-- ```bash -->
-<!-- # Example installation command -->
-<!-- npm install project-name -->
-<!-- ``` -->
+- Start the backend
+
+``` shell
+ts-node src/gmailapi/server.ts
+```
+
+- Start the frontend
+
+``` shell
+npm run dev
+```
+
 
 <!-- ## Usage -->
 <!-- Instructions and examples on how to use the project. -->

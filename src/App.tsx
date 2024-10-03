@@ -14,7 +14,12 @@ import {
   loadProfileSuccess,
   loadProfileFailure
 } from './stores/profile';
-import {Label, Profile} from './components';
+import {Label, LabelsPieChart, Profile} from './components';
+import {
+  labelsPieChartWidth,
+  labelsPieChartHeight,
+  labelsPieChartNumLabels,
+} from './constants';
 import './App.css';
 
 function App() {
@@ -71,6 +76,13 @@ function App() {
     }
     return (
       <>
+      <LabelsPieChart
+        labels={labels}
+        threadsTotal={profileThreadsTotal}
+        width={labelsPieChartWidth}
+        height={labelsPieChartHeight}
+        topK={labelsPieChartNumLabels}
+      />
       {labels.map(({id, name, threadsTotal}) => {
         return <Label key={id} id={id} name={name} threadsTotal={threadsTotal}/>;
       })}

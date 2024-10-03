@@ -14,7 +14,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@fontsource/roboto": "^5.1.0",
     "@google-cloud/local-auth": "^3.0.1",
+    "@mui/icons-material": "^6.1.2",
+    "@mui/material": "^6.1.2",
+    "@mui/x-charts": "^7.18.0",
     "@reduxjs/toolkit": "^2.2.7",
     "cors": "^2.8.5",
     "express": "^4.21.0",
