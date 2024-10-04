@@ -32,55 +32,58 @@ function App() {
   const labels = useAppSelector((state) => state.labels.labels);
   const labelsStatus = useAppSelector((state) => state.labels.status);
 
-  const {emailAddress: profileEmailAddress, threadsTotal: profileThreadsTotal} = useAppSelector((state) => state.profile);
-  const profileStatus = useAppSelector((state) => state.profile.status);
+  const profile = useAppSelector((state) => state.profile);
+  const profileStatus = profile.status;
 
   const filters = useAppSelector((state) => state.filters.filters);
   const filtersStatus = useAppSelector((state) => state.filters.status);
 
   const renderProfile = () => {
+    if (profile) {
+      return <Profile emailAddress={profile.emailAddress} threadsTotal={profile.threadsTotal} />;
+    }
     if (profileStatus === 'loading') {
       return <span>Loading Profile...</span>;
-    } else if (profileStatus === 'failed') {
-      return <span>Error Loading Profile!</span>;
     }
-    return <Profile emailAddress={profileEmailAddress} threadsTotal={profileThreadsTotal} />
+    return <span>Error Loading Profile!</span>;
   };
 
   const renderLabels = () => {
+    if (labels && profile.threadsTotal) {
+      return (
+        <>
+          <LabelsPieChart
+            labels={labels}
+            threadsTotal={profile.threadsTotal}
+            width={labelsPieChartWidth}
+            height={labelsPieChartHeight}
+            topK={labelsPieChartNumLabels}
+          />
+          {labels.map(({id, name, threadsTotal}) => {
+            return <Label key={id} id={id} name={name} threadsTotal={threadsTotal}/>;
+          })}
+        </>
+      );
+    }
     if (labelsStatus === 'loading') {
       return <span>Loading Labels...</span>;
-    } else if (labelsStatus === 'failed') {
-      return <span>Error Loading labels!</span>;
     }
-    return (
-      <>
-      <LabelsPieChart
-        labels={labels}
-        threadsTotal={profileThreadsTotal}
-        width={labelsPieChartWidth}
-        height={labelsPieChartHeight}
-        topK={labelsPieChartNumLabels}
-      />
-      {labels.map(({id, name, threadsTotal}) => {
-        return <Label key={id} id={id} name={name} threadsTotal={threadsTotal}/>;
-      })}
-      </>
-    );
+    return <span>Error Loading labels!</span>;
   };
 
   const renderFilters = () => {
+    if (filters) {
+      return (
+        <>
+          {filters.map((filter) => JSON.stringify(filter, null, 2))}
+          <br />
+        </>
+      )
+    }
     if (filtersStatus === 'loading') {
       return <span>Loading Filters...</span>;
-    } else if (filtersStatus === 'failed') {
-      return <span>Error Loading Filters!</span>
     }
-    return (
-      <>
-      {filters.map((filter) => JSON.stringify(filter, null, 2))}
-      <br />
-      </>
-    )
+    return <span>Error Loading Filters!</span>
   };
 
   const getMessages = async () => {
@@ -101,11 +104,11 @@ function App() {
   };
 
   return (
-    <div className="card">
+    <>
       {renderProfile()}
       {renderLabels()}
       {renderFilters()}
-    </div>
+    </>
   )
 }
 
