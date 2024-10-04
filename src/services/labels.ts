@@ -14,8 +14,11 @@ const fetchLabelInfo = async (_id: string) => {
 
 export const fetchLabels = async (): Promise<Label[]> => {
     const userLabels = await fetchUserLabels();
-    return userLabels.map(async ({id: _id}: {id: string}) => {
+    const result = await Promise.all(
+      userLabels.map(async ({id: _id}: {id: string}) => {
         const {id, name, threadsTotal, color} = await fetchLabelInfo(_id);
-        return {id, name, threadsTotal, color};
-    });
+          return {id, name, threadsTotal, color};
+      })
+    );
+    return result;
 }

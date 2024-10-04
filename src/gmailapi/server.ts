@@ -46,7 +46,7 @@ app.get('/labels/:id', async (req: Request, res: Response) => {
 app.get('/filters', async (_: Request, res: Response) => {
   const data = await getFilters(gmail);
   console.log(JSON.stringify(data, null, 2));
-  res.json(data);
+  res.json(data.filter);
 });
 
 app.get('/messages', async (_: Request, res: Response) => {

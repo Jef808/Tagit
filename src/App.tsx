@@ -1,20 +1,16 @@
 import {useEffect, useState} from 'react';
-import {useAppDispatch, useAppSelector} from './hooks';
-import {fetchLabels, fetchProfile} from './services';
 import {
-  resetLabels,
-  pushLabel,
-  setLabelsLoading,
-  loadLabelsSuccess,
-  loadLabelsFailure
-} from './stores/labels';
+  Label,
+  LabelsPieChart,
+  Profile
+} from './components';
 import {
-  setProfileLoading,
-  setProfile,
-  loadProfileSuccess,
-  loadProfileFailure
-} from './stores/profile';
-import {Label, LabelsPieChart, Profile} from './components';
+  useFetchProfile,
+  useFetchLabels,
+  useFetchFilters,
+  useAppDispatch,
+  useAppSelector
+} from './hooks';
 import {
   labelsPieChartWidth,
   labelsPieChartHeight,
@@ -23,34 +19,14 @@ import {
 import './App.css';
 
 function App() {
-  const [filters, setFilters] = useState([]);
   const [messages, setMessages] = useState([]);
 
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    // fetch profile
-    dispatch(setProfileLoading());
-    fetchProfile().then((profile) => {
-      dispatch(setProfile(profile));
-      dispatch(loadProfileSuccess());
-    }).catch((err) => {
-      console.error(err);
-      dispatch(loadProfileFailure());
-    });
-
-    // fetch labels
-    dispatch(resetLabels());
-    dispatch(setLabelsLoading());
-    fetchLabels().then((labels) => {
-      labels.forEach((label) => {
-        label.then((l) => dispatch(pushLabel(l)));
-      });
-      dispatch(loadLabelsSuccess());
-    }).catch((err) => {
-      console.error(err);
-      dispatch(loadLabelsFailure());
-    });
+    useFetchProfile(dispatch);
+    useFetchLabels(dispatch);
+    useFetchFilters(dispatch);
   }, []);
 
   const labels = useAppSelector((state) => state.labels.labels);
@@ -58,6 +34,9 @@ function App() {
 
   const {emailAddress: profileEmailAddress, threadsTotal: profileThreadsTotal} = useAppSelector((state) => state.profile);
   const profileStatus = useAppSelector((state) => state.profile.status);
+
+  const filters = useAppSelector((state) => state.filters.filters);
+  const filtersStatus = useAppSelector((state) => state.filters.status);
 
   const renderProfile = () => {
     if (profileStatus === 'loading') {
@@ -72,7 +51,7 @@ function App() {
     if (labelsStatus === 'loading') {
       return <span>Loading Labels...</span>;
     } else if (labelsStatus === 'failed') {
-      return <span>Error loading labels!</span>;
+      return <span>Error Loading labels!</span>;
     }
     return (
       <>
@@ -90,14 +69,18 @@ function App() {
     );
   };
 
-  const getFilters = async () => {
-    try {
-      const res = await fetch('http://localhost:3030/filters');
-      const resData = await res.json();
-      setFilters(resData);
-    } catch (err) {
-      console.error(err);
+  const renderFilters = () => {
+    if (filtersStatus === 'loading') {
+      return <span>Loading Filters...</span>;
+    } else if (filtersStatus === 'failed') {
+      return <span>Error Loading Filters!</span>
     }
+    return (
+      <>
+      {filters.map((filter) => JSON.stringify(filter, null, 2))}
+      <br />
+      </>
+    )
   };
 
   const getMessages = async () => {
@@ -121,6 +104,7 @@ function App() {
     <div className="card">
       {renderProfile()}
       {renderLabels()}
+      {renderFilters()}
     </div>
   )
 }

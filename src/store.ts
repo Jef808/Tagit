@@ -1,11 +1,13 @@
 import {configureStore} from '@reduxjs/toolkit';
 import {profileReducer} from './stores/profile';
 import {labelsReducer} from './stores/labels';
+import {filtersReducer} from './stores/filters';
 
 const store = configureStore({
   reducer: {
     profile: profileReducer,
-    labels: labelsReducer
+    labels: labelsReducer,
+    filters: filtersReducer
   }
 });
 

@@ -33,11 +33,11 @@ export const labelsSlice = createSlice({
 });
 
 export const {
-    pushLabel,
-    setLabelsLoading,
-    loadLabelsSuccess,
-    loadLabelsFailure,
-    resetLabels
+  pushLabel,
+  setLabelsLoading,
+  loadLabelsSuccess,
+  loadLabelsFailure,
+  resetLabels
 } = labelsSlice.actions;
 
 export default labelsSlice.reducer;
