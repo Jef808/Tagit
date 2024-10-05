@@ -1,6 +1,7 @@
 import {useEffect, useState} from 'react';
+import Divider from '@mui/material/Divider';
 import {
-  Label,
+  LabelList,
   LabelsPieChart,
   Profile
 } from './components';
@@ -8,9 +9,12 @@ import {
   useFetchProfile,
   useFetchLabels,
   useFetchFilters,
+  useFetchMessage,
+  useFetchMessages,
   useAppDispatch,
   useAppSelector
 } from './hooks';
+import {sortLabels} from './stores/labels';
 import {
   labelsPieChartWidth,
   labelsPieChartHeight,
@@ -19,14 +23,15 @@ import {
 import './App.css';
 
 function App() {
-  const [messages, setMessages] = useState([]);
-
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     useFetchProfile(dispatch);
-    useFetchLabels(dispatch);
+    useFetchLabels(dispatch).then(() => {
+      dispatch(sortLabels());
+    });
     useFetchFilters(dispatch);
+    useFetchMessages(dispatch);
   }, []);
 
   const labels = useAppSelector((state) => state.labels.labels);
@@ -37,6 +42,9 @@ function App() {
 
   const filters = useAppSelector((state) => state.filters.filters);
   const filtersStatus = useAppSelector((state) => state.filters.status);
+
+  const messages = useAppSelector((state) => state.messages.messages);
+  const messagesStatus = useAppSelector((state) => state.messages.status);
 
   const renderProfile = () => {
     if (profile) {
@@ -59,13 +67,12 @@ function App() {
             height={labelsPieChartHeight}
             topK={labelsPieChartNumLabels}
           />
-          {labels.map(({id, name, threadsTotal}) => {
-            return <Label key={id} id={id} name={name} threadsTotal={threadsTotal}/>;
-          })}
+          <Divider />
+          <LabelList labels={labels} />
         </>
       );
     }
-    if (labelsStatus === 'loading') {
+    if (labelsStatus === 'loading' || profileStatus === 'loading') {
       return <span>Loading Labels...</span>;
     }
     return <span>Error Loading labels!</span>;
@@ -73,12 +80,7 @@ function App() {
 
   const renderFilters = () => {
     if (filters) {
-      return (
-        <>
-          {filters.map((filter) => JSON.stringify(filter, null, 2))}
-          <br />
-        </>
-      )
+      return <>{filters.map((filter) => <div>{JSON.stringify(filter, null, 2)}</div>)}</>;
     }
     if (filtersStatus === 'loading') {
       return <span>Loading Filters...</span>;
@@ -86,28 +88,22 @@ function App() {
     return <span>Error Loading Filters!</span>
   };
 
-  const getMessages = async () => {
-    try {
-      const res = await fetch('http://localhost:3030/messages');
-      const resData = await res.json();
-      setMessages(resData);
-    } catch (err) {
-      console.error(err);
+  const renderMessages = () => {
+    if (messages) {
+      return <>{messages.map((message) => <div>{JSON.stringify(message, null, 2)}</div>)}</>;
     }
-  };
-
-  const numberOfMessages = () => {
-    const n = profile.threadsTotal;
-    return n && (
-      <span>Number of messages: {n}</span>
-    );
+    if (messagesStatus === 'loading') {
+      return <span>Loading Messages...</span>
+    }
+    return <span>Error Loading Messages!</span>
   };
 
   return (
     <>
       {renderProfile()}
       {renderLabels()}
-      {renderFilters()}
+    {/* renderFilters() */}
+      {renderMessages()}
     </>
   )
 }

@@ -19,6 +19,9 @@ export const labelsSlice = createSlice({
     pushLabel: (state, action: PayloadAction<Label>) => {
       state.labels.push(action.payload);
     },
+    sortLabels: (state) => {
+      state.labels.sort((a, b) => b.threadsTotal - a.threadsTotal);
+    },
     setLabelsLoading: (state) => {
       state.status = 'loading';
     },
@@ -34,6 +37,7 @@ export const labelsSlice = createSlice({
 
 export const {
   pushLabel,
+  sortLabels,
   setLabelsLoading,
   loadLabelsSuccess,
   loadLabelsFailure,

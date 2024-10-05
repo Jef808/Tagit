@@ -2,12 +2,14 @@ import {configureStore} from '@reduxjs/toolkit';
 import {profileReducer} from './stores/profile';
 import {labelsReducer} from './stores/labels';
 import {filtersReducer} from './stores/filters';
+import {messagesReducer} from './stores/messages';
 
 const store = configureStore({
   reducer: {
     profile: profileReducer,
     labels: labelsReducer,
-    filters: filtersReducer
+    filters: filtersReducer,
+    messages: messagesReducer
   }
 });
 

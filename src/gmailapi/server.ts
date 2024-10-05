@@ -6,7 +6,7 @@ import cors from 'cors';
 import {getLabel, getLabels} from './labels';
 import {getFilters} from './filters';
 import {getProfile} from './profile';
-import {getMessages} from './messages';
+import {getMessages, getMessageMetadata} from './messages';
 
 const gmail = google.gmail('v1');
 
@@ -51,6 +51,13 @@ app.get('/filters', async (_: Request, res: Response) => {
 
 app.get('/messages', async (_: Request, res: Response) => {
   const data = await getMessages(gmail);
+  console.log(JSON.stringify(data, null, 2));
+  res.json(data);
+});
+
+app.get('/messages/:id', async (req: Request, res: Response) => {
+  const {id} = req.params;
+  const data = await getMessageMetadata(gmail, id);
   console.log(JSON.stringify(data, null, 2));
   res.json(data);
 });
