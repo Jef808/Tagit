@@ -9,6 +9,7 @@ type LabelListProps = {
 };
 
 export const LabelList: FC<LabelListProps> = ({labels}) => {
+  const sortedLabels = [...labels].sort((a, b) => b.threadsTotal - a.threadsTotal);
   return (
     <List
       sx={{
@@ -25,7 +26,7 @@ export const LabelList: FC<LabelListProps> = ({labels}) => {
         </ListSubheader>
       }
     >
-      {labels.map(label => <LabelListItem {...label} />)}
+      {sortedLabels.map(label => <LabelListItem key={label.id} {...label} />)}
     </List>
   );
 };

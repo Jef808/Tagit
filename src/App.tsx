@@ -14,7 +14,6 @@ import {
   useAppDispatch,
   useAppSelector
 } from './hooks';
-import {sortLabels} from './stores/labels';
 import {
   labelsPieChartWidth,
   labelsPieChartHeight,
@@ -27,9 +26,7 @@ function App() {
 
   useEffect(() => {
     useFetchProfile(dispatch);
-    useFetchLabels(dispatch).then(() => {
-      dispatch(sortLabels());
-    });
+    useFetchLabels(dispatch);
     useFetchFilters(dispatch);
     useFetchMessages(dispatch);
   }, []);

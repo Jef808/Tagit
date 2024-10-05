@@ -5,5 +5,6 @@ export type Label = {
   color: {
     textColor: string,
     backgroundColor: string
-  }
+  },
+  filterIds?: string[];
 };
