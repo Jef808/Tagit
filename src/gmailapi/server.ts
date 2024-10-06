@@ -26,40 +26,50 @@ app.use(cors());
 
 app.get('/profile', async (_: Request, res: Response) => {
   const data = await getProfile(gmail);
-  console.log(JSON.stringify(data, null, 2));
   res.json(data);
 });
 
 app.get('/labels', async (_: Request, res: Response) => {
   const data = await getLabels(gmail);
-  console.log(JSON.stringify(data, null, 2));
   res.json(data.labels);
 });
 
 app.get('/labels/:id', async (req: Request, res: Response) => {
   const {id} = req.params;
   const data = await getLabel(gmail, id);
-  console.log(JSON.stringify(data, null, 2));
   res.json(data);
 });
 
 app.get('/filters', async (_: Request, res: Response) => {
   const data = await getFilters(gmail);
-  console.log(JSON.stringify(data, null, 2));
   res.json(data.filter);
 });
 
 app.get('/messages', async (_: Request, res: Response) => {
+  console.log('PROCESSING GET MESSAGES');
   const data = await getMessages(gmail);
-  console.log(JSON.stringify(data, null, 2));
   res.json(data);
+})
+
+app.get('/messages/:pageToken', async (req: Request, res: Response) => {
+  console.log('PROCESSING GET MESSAGES WITH PAGE TOKEN');
+  try {
+    const {pageToken} = req.params;
+    const data = await getMessages(gmail, pageToken);
+    res.send(data);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
-app.get('/messages/:id', async (req: Request, res: Response) => {
-  const {id} = req.params;
-  const data = await getMessageMetadata(gmail, id);
-  console.log(JSON.stringify(data, null, 2));
-  res.json(data);
+app.get('/message/:id', async (req: Request, res: Response) => {
+  try {
+    const {id} = req.params;
+    const data = await getMessageMetadata(gmail, id);
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 app.listen(3030, () => {

@@ -2,6 +2,7 @@ import {
   resetMessages,
   pushMessage,
   upsertMessage,
+  setNextPageToken,
   setMessagesLoading,
   loadMessagesSuccess,
   loadMessagesFailure
@@ -13,12 +14,13 @@ export const useFetchMessages = async (dispatch: AppDispatch) => {
   try {
     dispatch(resetMessages());
     dispatch(setMessagesLoading());
-    const messages = await fetchMessages();
+    const {messages, nextPageToken} = await fetchMessages();
+    dispatch(setNextPageToken(nextPageToken));
     messages.forEach((message) => dispatch(pushMessage(message)));
     dispatch(loadMessagesSuccess());
   } catch (err) {
     dispatch(loadMessagesFailure());
-    console.error(err);
+    console.error('@hooks/messagesHooks:useFetchMessages:', err);
   }
 };
 
