@@ -28,4 +28,4 @@ npm run dev
 The app is then accessible by navigating to `http://localhost:5173` on any browser.
 
 ## License
-This project is licensed under the [[file:LICENSE][MIT License]]
+This project is licensed under the MIT License
