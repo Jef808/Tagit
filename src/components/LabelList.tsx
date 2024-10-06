@@ -1,14 +1,20 @@
-import type {FC} from 'react';
+import type {FC, MouseEvent} from 'react';
 import type {Label} from '../stores/labels';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import {LabelListItem} from './LabelListItem';
 
 type LabelListProps = {
-  labels: Label[]
+  labels: Label[],
+  selectedId: string,
+  onSelect: (labelId: string) => void
 };
 
-export const LabelList: FC<LabelListProps> = ({labels}) => {
+export const LabelList: FC<LabelListProps> = ({
+  labels,
+  selectedId,
+  onSelect
+}) => {
   const sortedLabels = [...labels].sort((a, b) => b.threadsTotal - a.threadsTotal);
   return (
     <List
@@ -26,7 +32,16 @@ export const LabelList: FC<LabelListProps> = ({labels}) => {
         </ListSubheader>
       }
     >
-      {sortedLabels.map(label => <LabelListItem key={label.id} {...label} />)}
+      {sortedLabels.map((label) => {
+        return (
+          <LabelListItem
+            key={label.id}
+            selected={selectedId === label.id}
+            onClick={(event) => onSelect(label.id)}
+            label={label}
+          />
+        );
+      })}
     </List>
   );
 };

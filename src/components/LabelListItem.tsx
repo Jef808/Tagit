@@ -1,21 +1,26 @@
-import {useState} from 'react';
 import type {FC} from 'react';
-import Collapse from '@mui/material/Collapse';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import {ExpandLess, ExpandMore} from '@mui/icons-material';
 import type {Label} from '../stores/labels';
 
-export const LabelListItem: FC<{key: string} & Label> = ({
-  key,
-  id,
-  name,
-  threadsTotal,
-  color
+type LabelListItemProps = {
+  selected: boolean,
+  onClick: (event: MouseEvent<HTMLDivElement, MouseEvent>) => void,
+  label: Label
+};
+
+export const LabelListItem: FC<LabelListItemProps> = ({
+  selected,
+  onClick,
+  label
 }) => {
-  const [open, setOpen] = useState(false);
+  const {id, name, threadsTotal, color} = label;
   return (
-    <ListItemButton sx={color && {bgcolor: color.backgroundColor}}>
+    <ListItemButton
+      sx={color && {bgcolor: color.backgroundColor}}
+      selected={selected}
+      onClick={onClick}
+    >
       <ListItemText
         sx={color && {fgcolor: color.textColor}}
         primary={name}

@@ -17,7 +17,7 @@ export const labelsSlice = createSlice({
   initialState,
   reducers: {
     pushLabel: (state, action: PayloadAction<Label>) => {
-      state.labels.push({filterIds: [], ...action.payload});
+      state.labels.push(action.payload);
     },
     setLabelsLoading: (state) => {
       state.status = 'loading';

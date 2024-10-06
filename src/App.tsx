@@ -1,6 +1,8 @@
 import {useEffect, useState} from 'react';
+import type {MouseEvent} from 'react';
 import Divider from '@mui/material/Divider';
 import {
+  FilterList,
   LabelList,
   LabelsPieChart,
   Profile
@@ -9,6 +11,7 @@ import {
   useFetchProfile,
   useFetchLabels,
   useFetchFilters,
+  useAssociateFiltersToLabels,
   useFetchMessage,
   useFetchMessages,
   useAppDispatch,
@@ -22,6 +25,7 @@ import {
 import './App.css';
 
 function App() {
+  const [selectedLabel, setSelectedLabel] = useState('');
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -42,6 +46,13 @@ function App() {
 
   const messages = useAppSelector((state) => state.messages.messages);
   const messagesStatus = useAppSelector((state) => state.messages.status);
+
+  const handleLabelClick = (
+    event: MouseEvent<HTMLDivElement, MouseEvent>,
+    labelId: string
+  ) => {
+    setSelectedLabel(labelId);
+  };
 
   const renderProfile = () => {
     if (profile) {
@@ -65,7 +76,11 @@ function App() {
             topK={labelsPieChartNumLabels}
           />
           <Divider />
-          <LabelList labels={labels} />
+          <LabelList
+            selectedId={selectedLabel}
+            onSelect={(id: string) => setSelectedLabel(id)}
+            labels={labels}
+          />
         </>
       );
     }
@@ -77,7 +92,8 @@ function App() {
 
   const renderFilters = () => {
     if (filters) {
-      return <>{filters.map((filter) => <div>{JSON.stringify(filter, null, 2)}</div>)}</>;
+      const selectedLabelFilters = filters.filter(filter => filter.action.addLabelIds.includes(selectedLabel));
+      return <FilterList filters={selectedLabelFilters} />;
     }
     if (filtersStatus === 'loading') {
       return <span>Loading Filters...</span>;
@@ -99,7 +115,7 @@ function App() {
     <>
       {renderProfile()}
       {renderLabels()}
-    {/* renderFilters() */}
+      {renderFilters()}
       {renderMessages()}
     </>
   )

@@ -13,7 +13,7 @@ export const useFetchFilters = async (dispatch: AppDispatch) => {
     dispatch(resetFilters());
     dispatch(setFiltersLoading());
     const filters = await fetchFilters();
-    filters.forEach((filter) => dispatch(pushFilter(filter)));
+    filters.forEach(filter => dispatch(pushFilter(filter)));
     dispatch(loadFiltersSuccess());
   } catch (err) {
     dispatch(loadFiltersFailure());
