@@ -14,15 +14,13 @@ export const LabelListItem: FC<LabelListItemProps> = ({
   onClick,
   label
 }) => {
-  const {id, name, threadsTotal, color} = label;
+  const {id, name, threadsTotal} = label;
   return (
     <ListItemButton
-      sx={color && {bgcolor: color.backgroundColor}}
       selected={selected}
       onClick={onClick}
     >
       <ListItemText
-        sx={color && {fgcolor: color.textColor}}
         primary={name}
         secondary={threadsTotal}
       />

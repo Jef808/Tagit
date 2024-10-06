@@ -1,4 +1,4 @@
-export type {Message, MessageMetadata} from './types';
+export type {Header, Message, MessageMetadata} from './types';
 export {
   default as messagesReducer,
   pushMessage,

@@ -1,4 +1,4 @@
-type Header = {
+export type Header = {
   name: string,
   value: string
 };
@@ -31,5 +31,7 @@ export type MessageMetadata = {
   id: string,
   threadId: string,
   labelIds?: string[],
-  headers?: Header[]
+  date?: string,
+  from?: string,
+  subject?: string
 }

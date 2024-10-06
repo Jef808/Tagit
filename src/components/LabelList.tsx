@@ -1,5 +1,6 @@
 import type {FC, MouseEvent} from 'react';
 import type {Label} from '../stores/labels';
+import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListSubheader from '@mui/material/ListSubheader';
 import {LabelListItem} from './LabelListItem';
@@ -22,14 +23,19 @@ export const LabelList: FC<LabelListProps> = ({
         width: '100%',
         maxWidth: 360,
         overflow: 'auto',
-        maxHeight: 300,
-        bgcolor: 'background.paper'
+        maxHeight: 440,
+        bgcolor: 'background.paper',
+        border: '1px solid grey',
+        borderRadius: 3
       }}
       aria-labelledby="label-list-subheader"
       subheader={
-        <ListSubheader component="div" id="label-list-subheader">
-          Labels
-        </ListSubheader>
+        <>
+          <ListSubheader component="div" id="label-list-subheader">
+            Labels
+          </ListSubheader>
+          <Divider />
+        </>
       }
     >
       {sortedLabels.map((label) => {

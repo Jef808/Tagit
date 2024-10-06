@@ -8,7 +8,6 @@ export const Profile: FC<Profile> = ({
   return (
     <div>
       <h2>{emailAddress}</h2>
-      <span>{`Total emails: ${threadsTotal}`}</span>
     </div>
   );
 }

@@ -1,3 +1,2 @@
-export const labelsPieChartWidth = 800;
-export const labelsPieChartHeight = 200;
+export const labelsPieChartHeight = 300;
 export const labelsPieChartNumLabels = 5;

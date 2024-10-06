@@ -1,10 +1,13 @@
 import {useEffect, useState} from 'react';
 import type {MouseEvent} from 'react';
-import Divider from '@mui/material/Divider';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
 import {
   FilterList,
+  FilterTable,
   LabelList,
   LabelsPieChart,
+  MessageList,
   Profile
 } from './components';
 import {
@@ -18,7 +21,6 @@ import {
   useAppSelector
 } from './hooks';
 import {
-  labelsPieChartWidth,
   labelsPieChartHeight,
   labelsPieChartNumLabels,
 } from './constants';
@@ -54,6 +56,10 @@ function App() {
     setSelectedLabel(labelId);
   };
 
+  const handleMessageClick = (messageId: string) => {
+    useFetchMessage(dispatch, messageId);
+  };
+
   const renderProfile = () => {
     if (profile) {
       return <Profile emailAddress={profile.emailAddress} threadsTotal={profile.threadsTotal} />;
@@ -64,24 +70,27 @@ function App() {
     return <span>Error Loading Profile!</span>;
   };
 
+  const renderPieChart = () => {
+    const pieChartReady = labels.length > 0 && profile.threadsTotal;
+    return pieChartReady && (
+      <LabelsPieChart
+        labels={labels}
+        threadsTotal={profile.threadsTotal}
+        height={labelsPieChartHeight}
+        topK={labelsPieChartNumLabels}
+      />
+    );
+  };
+
   const renderLabels = () => {
-    if (labels && profile.threadsTotal) {
+    const labelsReady = labels.length > 0;
+    if (labelsReady && profile.threadsTotal) {
       return (
-        <>
-          <LabelsPieChart
-            labels={labels}
-            threadsTotal={profile.threadsTotal}
-            width={labelsPieChartWidth}
-            height={labelsPieChartHeight}
-            topK={labelsPieChartNumLabels}
-          />
-          <Divider />
-          <LabelList
-            selectedId={selectedLabel}
-            onSelect={(id: string) => setSelectedLabel(id)}
-            labels={labels}
-          />
-        </>
+        <LabelList
+          selectedId={selectedLabel}
+          onSelect={(id: string) => setSelectedLabel(id)}
+          labels={labels}
+        />
       );
     }
     if (labelsStatus === 'loading' || profileStatus === 'loading') {
@@ -91,9 +100,10 @@ function App() {
   };
 
   const renderFilters = () => {
-    if (filters) {
+    const filtersReady = filters.length > 0;
+    if (filtersReady) {
       const selectedLabelFilters = filters.filter(filter => filter.action.addLabelIds.includes(selectedLabel));
-      return <FilterList filters={selectedLabelFilters} />;
+      return <FilterTable filters={selectedLabelFilters} />;
     }
     if (filtersStatus === 'loading') {
       return <span>Loading Filters...</span>;
@@ -103,7 +113,9 @@ function App() {
 
   const renderMessages = () => {
     if (messages) {
-      return <>{messages.map((message) => <div>{JSON.stringify(message, null, 2)}</div>)}</>;
+      return (
+        <MessageList messages={messages} onClick={handleMessageClick}/>
+      );
     }
     if (messagesStatus === 'loading') {
       return <span>Loading Messages...</span>
@@ -112,12 +124,15 @@ function App() {
   };
 
   return (
-    <>
+    <Container maxWidth="md">
+      <Stack direction="row" spacing={2}>
+        {renderLabels()}
+        {renderFilters()}
+      </Stack>
+      {renderPieChart()}
       {renderProfile()}
-      {renderLabels()}
-      {renderFilters()}
       {renderMessages()}
-    </>
+    </Container>
   )
 }
 

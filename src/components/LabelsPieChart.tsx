@@ -5,7 +5,6 @@ import type {Label} from '../stores/labels';
 export type LabelsPieChartProps = {
     labels: Label[],
     threadsTotal: number,
-    width: number,
     height: number,
     topK: number
 };
@@ -13,7 +12,6 @@ export type LabelsPieChartProps = {
 export const LabelsPieChart: FC<LabelsPieChartProps> = ({
     labels,
     threadsTotal,
-    width,
     height,
     topK
 }) => {
@@ -41,8 +39,10 @@ export const LabelsPieChart: FC<LabelsPieChartProps> = ({
     const sx = {
         [`& .${pieArcLabelClasses.root}`]: {
             fontWeight: 'bold',
-        }
+        },
+        border: '1px solid grey',
+        borderRadius: 3,
     }
 
-    return <PieChart series={series} sx={sx} width={width} height={height} />;
+    return <PieChart series={series} sx={sx} height={height} />;
 };
