@@ -53,14 +53,11 @@ export const FilterTable: FC<{filters: Filter[]}> = ({filters}) => (
             const data = extractData(filter);
             return (
               <TableRow hover role="checkbox" tabIndex={-1} key={data.id}>
-                {columns.map((column) => {
-                  const value = data[column.id];
-                  return (
-                    <TableCell key={column.id}>
-                      {value}
-                    </TableCell>
-                  );
-                })}
+                {columns.map((column) => (
+                  <TableCell key={column.id}>
+                    {data[column.id]}
+                  </TableCell>
+                ))}
               </TableRow>
             );
           })}

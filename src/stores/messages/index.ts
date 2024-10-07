@@ -3,7 +3,7 @@ export {
   default as messagesReducer,
   pushMessage,
   upsertMessage,
-  setNextPageToken,
+  setPageToken,
   setMessagesLoading,
   loadMessagesSuccess,
   loadMessagesFailure,

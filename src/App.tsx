@@ -1,20 +1,18 @@
 import {useEffect, useState} from 'react';
-import type {MouseEvent} from 'react';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import {
-  FilterList,
   FilterTable,
   LabelList,
   LabelsPieChart,
   MessageList,
-  Profile
+  Profile,
+  Suggestions
 } from './components';
 import {
   useFetchProfile,
   useFetchLabels,
   useFetchFilters,
-  useAssociateFiltersToLabels,
   useFetchMessage,
   useFetchMessages,
   useAppDispatch,
@@ -48,16 +46,14 @@ function App() {
 
   const messages = useAppSelector((state) => state.messages.messages);
   const messagesStatus = useAppSelector((state) => state.messages.status);
-
-  const handleLabelClick = (
-    event: MouseEvent<HTMLDivElement, MouseEvent>,
-    labelId: string
-  ) => {
-    setSelectedLabel(labelId);
-  };
+  const messagesPageToken = useAppSelector((state) => state.messages.pageToken)
 
   const handleMessageClick = (messageId: string) => {
     useFetchMessage(dispatch, messageId);
+  };
+
+  const handleLoadMoreMessagesClick = () => {
+    useFetchMessages(dispatch, messagesPageToken);
   };
 
   const renderProfile = () => {
@@ -114,7 +110,7 @@ function App() {
   const renderMessages = () => {
     if (messages) {
       return (
-        <MessageList messages={messages} onClick={handleMessageClick}/>
+        <Suggestions messages={messages} onLoadMore={handleLoadMoreMessagesClick} />
       );
     }
     if (messagesStatus === 'loading') {
@@ -125,13 +121,13 @@ function App() {
 
   return (
     <Container maxWidth="md">
-      <Stack direction="row" spacing={2}>
+      {renderMessages()}
+      {renderPieChart()}
+      <Stack direction="row">
         {renderLabels()}
         {renderFilters()}
       </Stack>
-      {renderPieChart()}
       {renderProfile()}
-      {renderMessages()}
     </Container>
   )
 }

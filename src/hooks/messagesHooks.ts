@@ -1,8 +1,7 @@
 import {
   resetMessages,
-  pushMessage,
   upsertMessage,
-  setNextPageToken,
+  setPageToken,
   setMessagesLoading,
   loadMessagesSuccess,
   loadMessagesFailure
@@ -10,25 +9,26 @@ import {
 import {fetchMessages, fetchMessageMetadata} from '../services';
 import type {AppDispatch} from '../store';
 
-export const useFetchMessages = async (dispatch: AppDispatch) => {
-  try {
-    dispatch(resetMessages());
-    dispatch(setMessagesLoading());
-    const {messages, nextPageToken} = await fetchMessages();
-    dispatch(setNextPageToken(nextPageToken));
-    messages.forEach((message) => dispatch(pushMessage(message)));
-    dispatch(loadMessagesSuccess());
-  } catch (err) {
-    dispatch(loadMessagesFailure());
-    console.error('@hooks/messagesHooks:useFetchMessages:', err);
-  }
-};
-
 export const useFetchMessage = async (dispatch: AppDispatch, id: string) => {
   try {
     const message = await fetchMessageMetadata(id);
     dispatch(upsertMessage(message));
   } catch (err) {
     console.error(err);
+  }
+};
+
+export const useFetchMessages = async (dispatch: AppDispatch, pageToken?: string) => {
+  try {
+    dispatch(setMessagesLoading());
+    const {messages, nextPageToken} = await fetchMessages(pageToken);
+    dispatch(setPageToken(nextPageToken));
+    messages.forEach((message) => {
+      useFetchMessage(dispatch, message.id);
+    });
+    dispatch(loadMessagesSuccess());
+  } catch (err) {
+    dispatch(loadMessagesFailure());
+    console.error('@hooks/messagesHooks:useFetchMessages:', err);
   }
 };

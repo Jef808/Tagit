@@ -4,13 +4,13 @@ import type {MessageMetadata} from './types';
 
 type MessagesState = {
   messages: MessageMetadata[],
-  nextPageToken: string,
+  pageToken: string,
   status: 'idle' | 'loading' | 'failed'
 };
 
 const initialState: MessagesState = {
   messages: [],
-  nextPageToken: '',
+  pageToken: '',
   status: 'idle'
 };
 
@@ -29,8 +29,8 @@ export const messagesSlice = createSlice({
         state.messages[index] = action.payload;
       }
     },
-    setNextPageToken: (state, action: PayloadAction<string>) => {
-      state.nextPageToken = action.payload;
+    setPageToken: (state, action: PayloadAction<string>) => {
+      state.pageToken = action.payload;
     },
     setMessagesLoading: (state) => {
       state.status = 'loading';
@@ -48,7 +48,7 @@ export const messagesSlice = createSlice({
 export const {
   pushMessage,
   upsertMessage,
-  setNextPageToken,
+  setPageToken,
   setMessagesLoading,
   loadMessagesSuccess,
   loadMessagesFailure,

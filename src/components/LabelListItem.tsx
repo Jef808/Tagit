@@ -1,4 +1,4 @@
-import type {FC} from 'react';
+import type {FC, MouseEvent} from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import type {Label} from '../stores/labels';
@@ -14,7 +14,7 @@ export const LabelListItem: FC<LabelListItemProps> = ({
   onClick,
   label
 }) => {
-  const {id, name, threadsTotal} = label;
+  const {name, threadsTotal} = label;
   return (
     <ListItemButton
       selected={selected}
