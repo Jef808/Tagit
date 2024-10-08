@@ -10,7 +10,7 @@ const fetchLabelInfo = async (_id: string) => {
     const res = await fetch(`http://localhost:3030/labels/${_id}`);
     const {id, name, threadsTotal, color} = await res.json();
     return {id, name, threadsTotal, color};
-}
+};
 
 export const fetchLabels = async (): Promise<Label[]> => {
     const userLabels = await fetchUserLabels();
@@ -21,4 +21,16 @@ export const fetchLabels = async (): Promise<Label[]> => {
       })
     );
     return result;
+};
+
+export const createLabel = async (name: string): Promise<Label> => {
+  const res = await fetch('http://localhost:3030/labels', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({name})
+  });
+  const {id, threadsTotal, color} = await res.json();
+  return {id, name, threadsTotal, color};
 }

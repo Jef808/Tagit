@@ -7,7 +7,8 @@ import {
   LabelsPieChart,
   MessageList,
   Profile,
-  Suggestions
+  Suggestions,
+  LabelFormPopup
 } from './components';
 import {
   useFetchProfile,
@@ -26,6 +27,9 @@ import './App.css';
 
 function App() {
   const [selectedLabel, setSelectedLabel] = useState('');
+  const [selectedMessageGroup, setSelectedMessageGroup] = useState('');
+  const [isLabelFormOpen, setIsLabelFormOpen] = useState(false);
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -48,12 +52,23 @@ function App() {
   const messagesStatus = useAppSelector((state) => state.messages.status);
   const messagesPageToken = useAppSelector((state) => state.messages.pageToken)
 
-  const handleMessageClick = (messageId: string) => {
-    useFetchMessage(dispatch, messageId);
-  };
-
   const handleLoadMoreMessagesClick = () => {
     useFetchMessages(dispatch, messagesPageToken);
+  };
+
+  const handleMessageClick = (fromValue: string) => {
+    setSelectedMessageGroup(fromValue);
+    setIsLabelFormOpen(true);
+  };
+
+  const handleCloseLabelForm = () => {
+    setIsLabelFormOpen(false);
+  };
+
+  const handleLabelFormSubmit = (formData: FormData) => {
+    const formJson = Object.fromEntries((formData as any).entries());
+    const labelName = formJson.label;
+    console.log(labelName);
   };
 
   const renderProfile = () => {
@@ -114,6 +129,7 @@ function App() {
           messages={messages}
           labels={labels}
           onLoadMore={handleLoadMoreMessagesClick}
+          onMessageClick={handleMessageClick}
           messagesStatus={messagesStatus}
         />
       );
@@ -126,6 +142,12 @@ function App() {
 
   return (
     <Container maxWidth="md">
+      <LabelFormPopup
+        fromValue={selectedMessageGroup}
+        open={isLabelFormOpen}
+        onClose={handleCloseLabelForm}
+        onSubmit={handleLabelFormSubmit}
+      />
       {renderMessages()}
       {renderPieChart()}
       <Stack direction="row">

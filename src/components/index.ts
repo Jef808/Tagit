@@ -4,3 +4,4 @@ export {Profile} from './Profile';
 export {FilterTable} from './FilterTable';
 export {MessageList} from './MessageList';
 export {Suggestions} from './Suggestions';
+export {LabelFormPopup} from './LabelFormPopup';

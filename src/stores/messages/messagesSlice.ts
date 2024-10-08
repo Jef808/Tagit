@@ -43,7 +43,7 @@ export const messagesSlice = createSlice({
     },
     resetMessages: () => initialState
   }
-})
+});
 
 export const {
   pushMessage,
