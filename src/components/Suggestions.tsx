@@ -14,7 +14,7 @@ import TableFooter from '@mui/material/TableFooter';
 import type {Label} from '../stores/labels';
 import type {MessageMetadata} from '../stores/messages/types';
 
-type SuggestionsProps = {
+type MessageGroupListProps = {
   messages: MessageMetadata[];
   labels: Label[];
   onLoadMore: () => void;
@@ -46,7 +46,7 @@ type Data = {
   numMessages: number;
 };
 
-export const Suggestions: FC<SuggestionsProps> = ({messages, labels, onLoadMore, onMessageClick, messagesStatus}) => {
+export const MessageGroupList: FC<MessageGroupListProps> = ({messages, labels, onLoadMore, onMessageClick, messagesStatus}) => {
   const labelIds = labels.map(label => label.id);
   const groupedMessages = groupMessagesByFrom(messages, labelIds);
   const data = Object.entries(groupedMessages).map(([from, messageGroup]) => {

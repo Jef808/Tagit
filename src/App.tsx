@@ -7,7 +7,7 @@ import {
   LabelsPieChart,
   MessageList,
   Profile,
-  Suggestions,
+  MessageGroupList,
   LabelFormPopup
 } from './components';
 import {
@@ -125,7 +125,7 @@ function App() {
   const renderMessages = () => {
     if (messages) {
       return (
-        <Suggestions
+        <MessageGroupList
           messages={messages}
           labels={labels}
           onLoadMore={handleLoadMoreMessagesClick}
@@ -142,12 +142,12 @@ function App() {
 
   return (
     <Container maxWidth="md">
-      <LabelFormPopup
+      {isLabelFormOpen && <LabelFormPopup
         fromValue={selectedMessageGroup}
         open={isLabelFormOpen}
         onClose={handleCloseLabelForm}
         onSubmit={handleLabelFormSubmit}
-      />
+      />}
       {renderMessages()}
       {renderPieChart()}
       <Stack direction="row">
