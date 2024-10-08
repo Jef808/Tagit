@@ -9,3 +9,8 @@ export async function getLabel(gmail: gmail_v1.Gmail, id: string) {
     const res = await gmail.users.labels.get({userId: 'me', id});
     return res.data;
 }
+
+export async function createLabel(gmail: gmail_v1.Gmail, name: string) {
+    const res = await gmail.users.labels.create({userId: 'me', requestBody: {name}});
+    return res.data;
+}

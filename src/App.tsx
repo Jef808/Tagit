@@ -110,7 +110,12 @@ function App() {
   const renderMessages = () => {
     if (messages) {
       return (
-        <Suggestions messages={messages} onLoadMore={handleLoadMoreMessagesClick} />
+        <Suggestions
+          messages={messages}
+          labels={labels}
+          onLoadMore={handleLoadMoreMessagesClick}
+          messagesStatus={messagesStatus}
+        />
       );
     }
     if (messagesStatus === 'loading') {

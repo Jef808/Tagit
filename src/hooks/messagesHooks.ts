@@ -1,5 +1,4 @@
 import {
-  resetMessages,
   upsertMessage,
   setPageToken,
   setMessagesLoading,

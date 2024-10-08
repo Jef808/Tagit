@@ -32,7 +32,7 @@ export const FilterTable: FC<{filters: Filter[]}> = ({filters}) => (
     sx={{width: '100%', overflow: 'hidden', border: '1px solid grey', borderRadius: 3}}
   >
     <TableContainer sx={{maxHeight: 440}}>
-      <Table stickyHeader aria-label="filters table">
+      <Table stickyHeader aria-label="filters table" size="small">
         <TableHead>
           <TableRow>
             <TableCell
@@ -45,7 +45,7 @@ export const FilterTable: FC<{filters: Filter[]}> = ({filters}) => (
           </TableRow>
           <TableRow>
             <TableCell key={'from'}>From</TableCell>
-            <TableCell key={'subject'}>Subject</TableCell>
+            <TableCell key={'subject'} align="right">Subject</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -53,11 +53,12 @@ export const FilterTable: FC<{filters: Filter[]}> = ({filters}) => (
             const data = extractData(filter);
             return (
               <TableRow hover role="checkbox" tabIndex={-1} key={data.id}>
-                {columns.map((column) => (
-                  <TableCell key={column.id}>
-                    {data[column.id]}
-                  </TableCell>
-                ))}
+                <TableCell key="from">
+                  {data.from}
+                </TableCell>
+                <TableCell key="subject" align="right">
+                  {data.subject}
+                </TableCell>
               </TableRow>
             );
           })}
