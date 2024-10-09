@@ -10,25 +10,15 @@ import DialogTitle from '@mui/material/DialogTitle';
 import {styled} from '@mui/material/styles';
 import type {Filter} from '../stores/filters';
 
-type FormDialogProps = {
-  fromValue: string,
+type LabelFormPopupProps = {
+  displayName: string,
+  email: string,
   open: boolean,
   onClose: () => void,
-  onSubmit: (data: FormData) => void
+  onSubmit: (data: FormData) => void,
 };
 
-const formatFromValue = (fromValue: string) => {
-  const split = fromValue.split(' <');
-  if (split.length === 1) {
-    return [fromValue, ''];
-  }
-  const name = ''.concat(split.slice(0, -1));
-  const email = split.slice(-1)[0].slice(0, -1);
-  return [name, email];
-};
-
-export const LabelFormPopup: FC<Filter> = ({fromValue, open, onClose, onSubmit}) => {
-  const [name, email] = formatFromValue(fromValue);
+export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, open, onClose, onSubmit}) => {
   return (
     <Dialog
       open={open}
@@ -44,7 +34,8 @@ export const LabelFormPopup: FC<Filter> = ({fromValue, open, onClose, onSubmit})
       }}
     >
       <DialogTitle>
-        {name}<br />{`<${email}>`}
+        {displayName && <>{displayName}<br /></>}
+        {`<${email}>`}
       </DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -69,4 +60,4 @@ export const LabelFormPopup: FC<Filter> = ({fromValue, open, onClose, onSubmit})
       </DialogActions>
     </Dialog>
   );
-};
+    };

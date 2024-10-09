@@ -27,7 +27,8 @@ import './App.css';
 
 function App() {
   const [selectedLabel, setSelectedLabel] = useState('');
-  const [selectedMessageGroup, setSelectedMessageGroup] = useState('');
+  const [selectedMessageDisplayName, setSelectedMessageDisplayName] = useState('');
+  const [selectedMessageEmail, setSelectedMessageEmail] = useState('');
   const [isLabelFormOpen, setIsLabelFormOpen] = useState(false);
 
   const dispatch = useAppDispatch();
@@ -56,8 +57,9 @@ function App() {
     useFetchMessages(dispatch, messagesPageToken);
   };
 
-  const handleMessageClick = (fromValue: string) => {
-    setSelectedMessageGroup(fromValue);
+  const handleMessageClick = ([displayName, email]: string[]) => {
+    setSelectedMessageDisplayName(displayName);
+    setSelectedMessageEmail(email);
     setIsLabelFormOpen(true);
   };
 
@@ -143,7 +145,8 @@ function App() {
   return (
     <Container maxWidth="md">
       {isLabelFormOpen && <LabelFormPopup
-        fromValue={selectedMessageGroup}
+        displayName={selectedMessageDisplayName}
+        email={selectedMessageEmail}
         open={isLabelFormOpen}
         onClose={handleCloseLabelForm}
         onSubmit={handleLabelFormSubmit}
