@@ -5,14 +5,15 @@ import {
   loadLabelsSuccess,
   loadLabelsFailure
 } from '../stores/labels';
-import {fetchLabels} from '../services';
+import type {Label} from '../stores/labels';
+import {createLabel, fetchUserLabels} from '../services';
 import type {AppDispatch} from '../store';
 
 export const useFetchLabels = async (dispatch: AppDispatch) => {
   try {
     dispatch(resetLabels());
     dispatch(setLabelsLoading());
-    const labels = await fetchLabels();
+    const labels = await fetchUserLabels();
     labels.forEach((label) => dispatch(pushLabel(label)));
     dispatch(loadLabelsSuccess());
   } catch (err) {
@@ -20,3 +21,13 @@ export const useFetchLabels = async (dispatch: AppDispatch) => {
     console.error(err);
   }
 };
+
+export const useCreateLabel = async (dispatch: AppDispatch, labelName: string): Promise<Label | undefined> => {
+  try {
+    const label = await createLabel(labelName);
+    dispatch(pushLabel(label));
+    return label;
+  } catch (err) {
+    console.error(err);
+  }
+}

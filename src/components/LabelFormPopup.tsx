@@ -1,5 +1,4 @@
 import type {FC, FormEvent} from 'react';
-import {useState} from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -7,8 +6,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {styled} from '@mui/material/styles';
-import type {Filter} from '../stores/filters';
+import {useAppSelector} from '../hooks';
 
 type LabelFormPopupProps = {
   displayName: string,
@@ -19,6 +17,9 @@ type LabelFormPopupProps = {
 };
 
 export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, open, onClose, onSubmit}) => {
+  const labels = useAppSelector((state) => state.labels.labels);
+  const autoCompleteTokens = labels.map(label => label.name).join(' ');
+
   return (
     <Dialog
       open={open}
@@ -52,6 +53,7 @@ export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, ope
           type="text"
           fullWidth
           variant="standard"
+          autoComplete="off"
         />
       </DialogContent>
       <DialogActions>
@@ -60,4 +62,4 @@ export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, ope
       </DialogActions>
     </Dialog>
   );
-    };
+};

@@ -1,4 +1,5 @@
-export {fetchLabels} from './labels';
+export type {ApplyLabelParams} from './labels';
+export {applyLabel, createLabel, fetchUserLabels} from './labels';
 export {fetchProfile} from './profile';
-export {fetchFilters} from './filters';
-export {fetchMessages, fetchMessageMetadata} from './messages';
+export {createFilter, fetchFilters} from './filters';
+export type {CreateFilterParams} from './filters';

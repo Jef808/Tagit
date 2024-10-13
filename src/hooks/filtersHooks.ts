@@ -5,7 +5,9 @@ import {
   loadFiltersSuccess,
   loadFiltersFailure
 } from '../stores/filters';
-import {fetchFilters} from '../services';
+import type {Filter} from '../stores/filters';
+import {createFilter, fetchFilters} from '../services';
+import type {CreateFilterParams} from '../services';
 import type {AppDispatch} from '../store';
 
 export const useFetchFilters = async (dispatch: AppDispatch) => {
@@ -17,6 +19,19 @@ export const useFetchFilters = async (dispatch: AppDispatch) => {
     dispatch(loadFiltersSuccess());
   } catch (err) {
     dispatch(loadFiltersFailure());
+    console.error(err);
+  }
+};
+
+export const useCreateFilter = async (
+  dispatch: AppDispatch,
+  createFilterProps: CreateFilterParams
+): Promise<Filter | undefined> => {
+  try {
+    const filter = await createFilter(createFilterProps);
+    dispatch(pushFilter(filter));
+    return filter;
+  } catch (err) {
     console.error(err);
   }
 };

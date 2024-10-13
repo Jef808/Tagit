@@ -6,7 +6,15 @@ export async function getFilters(gmail: gmail_v1.Gmail) {
     return res.data;
 }
 
-export async function createFilter(gmail: gmail_v1.Gmail, filter: Filter) {
-    const res = await gmail.users.settings.filters.create({userId: 'me', requestBody: filter});
-    return res.data;
+export async function createFilter(gmail: gmail_v1.Gmail, {
+    email,
+    labelId
+}: {
+    email: string,
+    labelId: string
+}): Promise<Filter> {
+    const criteria = {from: email};
+    const action = {addLabelIds: [labelId]};
+    const res = await gmail.users.settings.filters.create({userId: 'me', requestBody: {criteria, action}});
+    return res.data as Filter;
 }

@@ -3,17 +3,17 @@ import {google} from 'googleapis';
 import {authenticate} from '@google-cloud/local-auth';
 import express, {Request, Response} from 'express';
 import cors from 'cors';
-import {createLabel, getLabel, getLabels} from './labels';
-import {getFilters} from './filters';
+import {applyLabel, createLabel, getLabels} from './labels';
+import {createFilter, getFilters} from './filters';
 import {getProfile} from './profile';
-import {getMessages, getMessageMetadata} from './messages';
+import {getMessageGroups} from './messages';
 
 const gmail = google.gmail('v1');
 
 authenticate({
     keyfilePath: path.join(__dirname, '../../client_secret_723788189851-kmhg8nih04sckav3g08t83kl301sva82.apps.googleusercontent.com.json'),
     scopes: [
-      'https://www.googleapis.com/auth/gmail.metadata',
+      'https://www.googleapis.com/auth/gmail.readonly',
       'https://www.googleapis.com/auth/gmail.labels',
       'https://www.googleapis.com/auth/gmail.settings.basic'
     ]
@@ -28,6 +28,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+/**
+ * Get the user profile
+ */
 app.get('/profile', async (_: Request, res: Response) => {
   console.log('GET PROFILE REQUEST');
   try {
@@ -38,27 +41,22 @@ app.get('/profile', async (_: Request, res: Response) => {
   }
 });
 
+/**
+ * Get the list of labels
+ */
 app.get('/labels', async (_: Request, res: Response) => {
   console.log('GET LABELS REQUEST');
   try {
-    const data = await getLabels(gmail);
-    res.json(data.labels);
+    const labels = await getLabels(gmail);
+    res.json(labels);
   } catch (err) {
     console.error(err);
   }
 });
 
-app.get('/labels/:id', async (req: Request, res: Response) => {
-  console.log('GET LABEL REQUEST');
-  try {
-    const {id} = req.params;
-    const data = await getLabel(gmail, id);
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-  }
-});
-
+/**
+ * Create a new label
+ */
 app.post('/labels', async (req: Request, res: Response) => {
   console.log('POST LABELS REQUEST', JSON.stringify(req.body, null, 2));
   try {
@@ -70,6 +68,9 @@ app.post('/labels', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Get the list of filters
+ */
 app.get('/filters', async (_: Request, res: Response) => {
   console.log('GET FILTERS REQUEST');
   try {
@@ -80,43 +81,45 @@ app.get('/filters', async (_: Request, res: Response) => {
   }
 });
 
+/**
+ * Create a new filter
+ */
 app.post('/filters', async (req: Request, res: Response) => {
   console.log('POST FILTERS REQUEST', JSON.stringify(req.body, null, 2));
   try {
-    const data = await createLabel(gmail, req.body);
+    const data = await createFilter(gmail, req.body);
     res.json(data);
   } catch (err) {
     console.error(err);
   }
 });
 
-app.get('/messages', async (_: Request, res: Response) => {
-  console.log('GET MESSAGES REQUEST (NO PAGE TOKEN)');
-  try {
-    const data = await getMessages(gmail);
-    res.json(data);
-  } catch (err) {
-    console.error(err);
-  }
+/**
+ * Get message groups in the form of records
+ * {
+ *   [from]: numberOfMessages
+ * }
+ */
+app.get('/messageGroups', async (_: Request, res: Response) => {
+  const messageGroups = await getMessageGroups(gmail);
+  console.log(messageGroups);
+  res.json(messageGroups);
 });
 
-app.get('/messages/:pageToken', async (req: Request, res: Response) => {
-  console.log('GET MESSAGES REQUEST');
+/**
+ * Apply a label to all messages from given email.
+ * The request body must be of the form
+ * {
+ *   labelId: string,
+ *   email: string
+ * }
+ */
+app.post('/messages/label', async (req: Request, res: Response) => {
+  console.log('POST MESSAGES LABEL REQUEST');
   try {
-    const {pageToken} = req.params;
-    const data = await getMessages(gmail, pageToken);
-    res.send(data);
-  } catch (err) {
-    console.error(err);
-  }
-});
-
-app.get('/message/:id', async (req: Request, res: Response) => {
-  console.log('GET MESSAGE REQUEST');
-  try {
-    const {id} = req.params;
-    const data = await getMessageMetadata(gmail, id);
-    res.json(data);
+    const {labelId, email} = req.body;
+    await applyLabel(gmail, {labelId, email});
+    res.status(201);
   } catch (err) {
     console.error(err);
   }

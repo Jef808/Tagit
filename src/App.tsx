@@ -5,20 +5,24 @@ import {
   FilterTable,
   LabelList,
   LabelsPieChart,
-  MessageList,
   Profile,
   MessageGroupList,
   LabelFormPopup
 } from './components';
 import {
+  useCreateLabel,
+  useCreateFilter,
   useFetchProfile,
   useFetchLabels,
   useFetchFilters,
-  useFetchMessage,
-  useFetchMessages,
   useAppDispatch,
   useAppSelector
 } from './hooks';
+import {
+  fetchMessageGroups,
+  selectMessageGroups,
+  selectMessageGroupById
+} from './stores/messageGroups';
 import {
   labelsPieChartHeight,
   labelsPieChartNumLabels,
@@ -37,7 +41,10 @@ function App() {
     useFetchProfile(dispatch);
     useFetchLabels(dispatch);
     useFetchFilters(dispatch);
-    useFetchMessages(dispatch);
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchMessageGroups());
   }, []);
 
   const labels = useAppSelector((state) => state.labels.labels);
@@ -49,9 +56,8 @@ function App() {
   const filters = useAppSelector((state) => state.filters.filters);
   const filtersStatus = useAppSelector((state) => state.filters.status);
 
-  const messages = useAppSelector((state) => state.messages.messages);
-  const messagesStatus = useAppSelector((state) => state.messages.status);
-  const messagesPageToken = useAppSelector((state) => state.messages.pageToken)
+  const messageGroups = useAppSelector(selectMessageGroups);
+  const messageGroupsStatus = useAppSelector((state) => state.messageGroups.status);
 
   const handleLoadMoreMessagesClick = () => {
     useFetchMessages(dispatch, messagesPageToken);
@@ -67,9 +73,27 @@ function App() {
     setIsLabelFormOpen(false);
   };
 
-  const handleLabelFormSubmit = (formData: FormData) => {
+  const handleLabelFormSubmit = async (formData: FormData) => {
     const formJson = Object.fromEntries((formData as any).entries());
     const labelName = formJson.label;
+    try {
+      let label = labels.find(label => label.name === labelName);
+      if (!label) {
+        label = await useCreateLabel(dispatch, labelName);
+        // useFetchLabels(dispatch);
+      }
+      let filter = filters.find(filter => (
+        filter.criteria.from === selectedMessageEmail && filter.action.addLabelIds.includes(label.id)
+      ));
+      if (!filter) {
+        filter = await useCreateFilter(dispatch, {email: selectedMessageEmail, labelId: label.id});
+        // useFetchFilters(dispatch);
+      }
+      await useApplyLabel(dispatch, {labelId: label.id, selectedMessageEmail});
+      console.log('Form submitted:', JSON.stringify({label, filter}, null, 2));
+    } catch (err) {
+      console.error(err);
+    }
     console.log(labelName);
   };
 
@@ -95,51 +119,32 @@ function App() {
     );
   };
 
-  const renderLabels = () => {
-    const labelsReady = labels.length > 0;
-    if (labelsReady && profile.threadsTotal) {
-      return (
-        <LabelList
-          selectedId={selectedLabel}
-          onSelect={(id: string) => setSelectedLabel(id)}
-          labels={labels}
-        />
-      );
-    }
-    if (labelsStatus === 'loading' || profileStatus === 'loading') {
-      return <span>Loading Labels...</span>;
-    }
-    return <span>Error Loading labels!</span>;
-  };
+  const renderLabels = () => (
+    <LabelList
+      selectedId={selectedLabel}
+      onSelect={(id: string) => setSelectedLabel(id)}
+      labels={labels}
+    />
+  );
 
   const renderFilters = () => {
-    const filtersReady = filters.length > 0;
-    if (filtersReady) {
-      const selectedLabelFilters = filters.filter(filter => filter.action.addLabelIds.includes(selectedLabel));
-      return <FilterTable filters={selectedLabelFilters} />;
-    }
-    if (filtersStatus === 'loading') {
-      return <span>Loading Filters...</span>;
-    }
-    return <span>Error Loading Filters!</span>
+    const selectedLabelFilters = filters.filter(filter => filter.action.addLabelIds.includes(selectedLabel));
+    return <FilterTable filters={selectedLabelFilters} />;
   };
 
   const renderMessages = () => {
-    if (messages) {
-      return (
-        <MessageGroupList
-          messages={messages}
-          labels={labels}
-          onLoadMore={handleLoadMoreMessagesClick}
-          onMessageClick={handleMessageClick}
-          messagesStatus={messagesStatus}
-        />
-      );
+    if (labelsStatus === 'loading') {
+      return <span>Loading Labels...</span>;
     }
-    if (messagesStatus === 'loading') {
-      return <span>Loading Messages...</span>
-    }
-    return <span>Error Loading Messages!</span>
+    return (
+      <MessageGroupList
+        messageGroups={messageGroups}
+        labels={labels}
+        onLoadMore={handleLoadMoreMessagesClick}
+        onMessageClick={handleMessageClick}
+        messageGroupsStatus={messageGroupsStatus}
+      />
+    );
   };
 
   return (
@@ -153,10 +158,10 @@ function App() {
       />}
       {renderMessages()}
       {renderPieChart()}
-      <Stack direction="row">
-        {renderLabels()}
-        {renderFilters()}
-      </Stack>
+      {/* <Stack direction="row">
+          {renderLabels()}
+          {renderFilters()}
+          </Stack> */}
       {renderProfile()}
     </Container>
   )
