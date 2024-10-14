@@ -6,9 +6,7 @@ export type CreateFilterParams = {
 };
 
 export const fetchFilters = async (): Promise<Filter[]> => {
-  const res = await fetch('http://localhost:3030/filters');
-  const resJson = await res.json();
-  return resJson;
+  return await fetch('http://localhost:3030/filters').then(res => res.json());
 };
 
 export const createFilter = async ({email, labelId}: CreateFilterParams): Promise<Filter> => {

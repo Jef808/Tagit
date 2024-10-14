@@ -5,27 +5,26 @@ export type GetMessagesProps = {
     q?: string
 };
 
-export async function getMessageGroups(gmail: gmail_v1.Gmail, pageToken: string = '') {
-    const res = await gmail.users.messages.list({
-        userId: 'me',
-        pageToken,
-    });
-    const messages = res.data.messages || [];
-    const result: Record<string, number> = {};
-    await Promise.all(messages.map(async ({id}) => {
+export async function getMessageGroups(gmail: gmail_v1.Gmail, pageToken: string) {
+    const {messages, nextPageToken} = await getMessages(gmail, pageToken);
+
+    const messageGroups: Record<string, number> = {};
+    messages && await Promise.all(messages.map(async ({id}) => {
         const fromHeader = id && await getFromHeader(gmail, id);
-        if (fromHeader && !result[fromHeader]) {
+        if (fromHeader && !messageGroups[fromHeader]) {
             const numMessage = await getNumMessagesFrom(gmail, fromHeader);
-            numMessage && (result[fromHeader] = numMessage);
+            numMessage && (messageGroups[fromHeader] = numMessage);
         }
     }));
-    return result;
+    return {
+        messageGroups,
+        nextPageToken
+    };
 }
 
 export async function getMessages(gmail: gmail_v1.Gmail, pageToken: string) {
     const res = await gmail.users.messages.list({
         userId: 'me',
-        maxResults: 500,
         pageToken
     });
     return {
@@ -40,8 +39,8 @@ export async function getNumMessagesFrom(gmail: gmail_v1.Gmail, email: string) {
     let result = 0;
     while (true) {
         const {messages, nextPageToken} = await getFilteredMessages(gmail, {pageToken, q});
-        result += messages?.length || 0;
-        pageToken = nextPageToken || '';
+        result += messages.length;
+        pageToken = nextPageToken;
         if (!pageToken) break;
     }
     return result;

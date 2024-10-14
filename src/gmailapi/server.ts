@@ -100,10 +100,33 @@ app.post('/filters', async (req: Request, res: Response) => {
  *   [from]: numberOfMessages
  * }
  */
-app.get('/messageGroups', async (_: Request, res: Response) => {
-  const messageGroups = await getMessageGroups(gmail);
-  console.log(messageGroups);
-  res.json(messageGroups);
+app.get('/messageGroups/:pageToken', async (req: Request, res: Response) => {
+  console.log('GET MESSAGE GROUPS REQUEST');
+  try {
+    const {pageToken} = req.params;
+    const messageGroups = await getMessageGroups(gmail, pageToken ?? '');
+    console.log(messageGroups);
+    res.json(messageGroups);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+/**
+ * Get message groups in the form of records
+ * {
+ *   [from]: numberOfMessages
+ * }
+ */
+app.get('/messageGroups/', async (_: Request, res: Response) => {
+  console.log('GET MESSAGE GROUPS REQUEST');
+  try {
+    const messageGroups = await getMessageGroups(gmail, '');
+    console.log(messageGroups);
+    res.json(messageGroups);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 /**

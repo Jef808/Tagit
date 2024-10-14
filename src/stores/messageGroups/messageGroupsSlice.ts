@@ -7,19 +7,33 @@ interface MessageGroup {
   count: number;
 }
 
-const messageGroupsAdapter = createEntityAdapter<MessageGroup>();
+const messageGroupsAdapter = createEntityAdapter<MessageGroup>({
+  sortComparer: (a, b) => b.count - a.count
+});
 
 const initialState = messageGroupsAdapter.getInitialState({
-  status: 'idle'
-} as {status: 'idle' | 'loading' | 'failed'});
+  status: 'idle',
+  nextPageToken: ''
+} as {
+  status: 'idle' | 'loading' | 'failed',
+  nextPageToken: string
+});
 
-export const fetchMessageGroups = createAsyncThunk('messageGroups/fetchMessageGroups', async () => {
-  const messageGroups = await fetch('http://localhost:3030/messageGroups').then(res => res.json());
-  console.log(messageGroups);
-  return Object.entries(messageGroups).map(([fromHeader, count]) => ({
+export const fetchMessageGroups = createAsyncThunk('messageGroups/fetchMessageGroups', async (pageToken: string = '') => {
+  const {
+    messageGroups: messageGroupsRes,
+    nextPageToken
+  } = await fetch(`http://localhost:3030/messageGroups/${pageToken}`).then(res => res.json());
+
+  const messageGroups = Object.entries(messageGroupsRes).map(([fromHeader, count]) => ({
     id: fromHeader,
     count
   } as MessageGroup));
+
+  return {
+    messageGroups,
+    nextPageToken
+  };
 });
 
 const messageGroupsSlice = createSlice({
@@ -35,8 +49,10 @@ const messageGroupsSlice = createSlice({
       .addCase(fetchMessageGroups.pending, (state) => {
         state.status = 'loading'
       })
-      .addCase(fetchMessageGroups.fulfilled, (state, action: PayloadAction<MessageGroup[]>) => {
-        messageGroupsAdapter.upsertMany(state, action.payload);
+      .addCase(fetchMessageGroups.fulfilled, (state, action: PayloadAction<{messageGroups: MessageGroup[], nextPageToken: string}>) => {
+        const {messageGroups, nextPageToken} = action.payload;
+        messageGroupsAdapter.upsertMany(state, messageGroups);
+        state.nextPageToken = nextPageToken;
         state.status = 'idle';
       })
       .addCase(fetchMessageGroups.rejected, (state) => {

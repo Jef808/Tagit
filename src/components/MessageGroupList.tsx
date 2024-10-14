@@ -32,11 +32,27 @@ const parseFromHeader = (fromHeader: string) => {
   return [name, email];
 };
 
-export const MessageGroupList: FC<MessageGroupListProps> = ({messageGroups, onLoadMore, onMessageClick, messageGroupsStatus}) => {
-  const sortedMessageGroups = messageGroups.sort((a, b) => b.count - a.count);
+export const MessageGroupList: FC<MessageGroupListProps> = ({
+  messageGroups,
+  labels,
+  filters,
+  onLoadMore,
+  onMessageClick,
+  messageGroupsStatus
+}) => {
+  const filteredMessageGroups = messageGroups.filter(({id}) => {
+    const [name, email] = parseFromHeader(id);
+    return !filters.some(filter => filter.criteria.from.includes(email));
+  });
+
   return (
     <Paper
-      sx={{width: '100%', overflow: 'hidden', border: '1px solid grey', borderRadius: 3}}
+      sx={{
+        width: '100%',
+        overflow: 'hidden',
+        border: '1px solid grey',
+        borderRadius: 3
+      }}
     >
       <TableContainer sx={{maxHeight: 440}}>
         <Table stickyHeader aria-label="messages table" size="small">
@@ -56,7 +72,7 @@ export const MessageGroupList: FC<MessageGroupListProps> = ({messageGroups, onLo
             </TableRow>
           </TableHead>
           <TableBody>
-            {sortedMessageGroups.map(({id, count}) => (
+            {filteredMessageGroups.map(({id, count}) => (
               <TableRow
                 hover
                 onClick={(event) => onMessageClick(parseFromHeader(id))}

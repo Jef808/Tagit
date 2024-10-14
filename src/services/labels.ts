@@ -6,9 +6,8 @@ export type ApplyLabelParams = {
 };
 
 export const fetchUserLabels = async (): Promise<Label[]> => {
-    const res = await fetch('http://localhost:3030/labels');
-    const resJson = await res.json();
-    return resJson.filter(({type}: {type: string}) => type === 'user');
+    const res = await fetch('http://localhost:3030/labels').then(res => res.json());
+    return res.filter(({type}: {type: string}) => type === 'user');
 };
 
 export const createLabel = async (name: string): Promise<Label> => {

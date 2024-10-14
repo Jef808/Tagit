@@ -58,9 +58,10 @@ function App() {
 
   const messageGroups = useAppSelector(selectMessageGroups);
   const messageGroupsStatus = useAppSelector((state) => state.messageGroups.status);
+  const messageGroupsNextPageToken = useAppSelector((state) => state.messageGroups.nextPageToken);
 
   const handleLoadMoreMessagesClick = () => {
-    useFetchMessages(dispatch, messagesPageToken);
+    dispatch(fetchMessageGroups(messageGroupsNextPageToken));
   };
 
   const handleMessageClick = ([displayName, email]: string[]) => {
@@ -83,7 +84,7 @@ function App() {
         // useFetchLabels(dispatch);
       }
       let filter = filters.find(filter => (
-        filter.criteria.from === selectedMessageEmail && filter.action.addLabelIds.includes(label.id)
+        filter.criteria.from.includes(selectedMessageEmail) && filter.action.addLabelIds.includes(label.id)
       ));
       if (!filter) {
         filter = await useCreateFilter(dispatch, {email: selectedMessageEmail, labelId: label.id});
@@ -140,6 +141,7 @@ function App() {
       <MessageGroupList
         messageGroups={messageGroups}
         labels={labels}
+        filters={filters}
         onLoadMore={handleLoadMoreMessagesClick}
         onMessageClick={handleMessageClick}
         messageGroupsStatus={messageGroupsStatus}
@@ -158,10 +160,10 @@ function App() {
       />}
       {renderMessages()}
       {renderPieChart()}
-      {/* <Stack direction="row">
-          {renderLabels()}
-          {renderFilters()}
-          </Stack> */}
+      <Stack direction="row">
+        {renderLabels()}
+        {renderFilters()}
+      </Stack>
       {renderProfile()}
     </Container>
   )
