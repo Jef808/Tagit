@@ -1,8 +1,6 @@
-export type {Profile} from './types';
 export {
-    default as profileReducer,
-    setProfile,
-    setProfileLoading,
-    loadProfileSuccess,
-    loadProfileFailure
+  type Profile,
+  default as profileReducer,
+  fetchProfile,
+  selectProfile
 } from './profileSlice';

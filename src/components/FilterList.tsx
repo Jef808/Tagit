@@ -27,7 +27,7 @@ const extractData = (filter: Filter) => {
   return {id: filter.id, from, subject};
 };
 
-export const FilterTable: FC<{filters: Filter[]}> = ({filters}) => (
+export const FilterList: FC<{filters: Filter[]}> = ({filters}) => (
   <Paper
     sx={{width: '100%', overflow: 'hidden', border: '1px solid grey', borderRadius: 3}}
   >

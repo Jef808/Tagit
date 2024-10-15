@@ -6,7 +6,6 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {useAppSelector} from '../hooks';
 
 type LabelFormPopupProps = {
   displayName: string,
@@ -16,50 +15,45 @@ type LabelFormPopupProps = {
   onSubmit: (data: FormData) => void,
 };
 
-export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, open, onClose, onSubmit}) => {
-  const labels = useAppSelector((state) => state.labels.labels);
-  const autoCompleteTokens = labels.map(label => label.name).join(' ');
-
-  return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      PaperProps={{
-        component: 'form',
-        onSubmit: (event: FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          const formData = new FormData(event.currentTarget);
-          onSubmit(formData);
-          onClose();
-        }
-      }}
-    >
-      <DialogTitle>
-        {displayName && <>{displayName}<br /></>}
-        {`<${email}>`}
-      </DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          Automatically label emails sent from {email || name}.
-          In case the label does not already exist, a new one will be created.
-        </DialogContentText>
-        <TextField
-          autoFocus
-          required
-          margin="dense"
-          id="name"
-          name="label"
-          label="Label Name"
-          type="text"
-          fullWidth
-          variant="standard"
-          autoComplete="off"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button type="submit">Create</Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, open, onClose, onSubmit}) => (
+  <Dialog
+    open={open}
+    onClose={onClose}
+    PaperProps={{
+      component: 'form',
+      onSubmit: (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        onSubmit(formData);
+        onClose();
+      }
+    }}
+  >
+    <DialogTitle>
+      {displayName && <>{displayName}<br /></>}
+      {`<${email}>`}
+    </DialogTitle>
+    <DialogContent>
+      <DialogContentText>
+        Automatically label emails sent from {email || name}.
+        In case the label does not already exist, a new one will be created.
+      </DialogContentText>
+      <TextField
+        autoFocus
+        required
+        margin="dense"
+        id="name"
+        name="label"
+        label="Label Name"
+        type="text"
+        fullWidth
+        variant="standard"
+        autoComplete="off"
+      />
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={onClose}>Cancel</Button>
+      <Button type="submit">Create</Button>
+    </DialogActions>
+  </Dialog>
+);

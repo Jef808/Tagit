@@ -6,18 +6,9 @@ import {
   LabelList,
   LabelsPieChart,
   LabelFormPopup,
-  FilterTable,
+  FilterList,
   MessageGroupList,
 } from './components';
-import {
-  useFetchProfile,
-  useAppDispatch,
-  useAppSelector
-} from './hooks';
-import {
-  fetchMessageGroups,
-  selectMessageGroups,
-} from './stores/messageGroups';
 import {
   createLabel,
   fetchLabels,
@@ -29,10 +20,10 @@ import {
   selectFilters,
   selectFiltersByLabel
 } from './stores/filters';
-import {
-  labelsPieChartHeight,
-  labelsPieChartNumLabels,
-} from './constants';
+import {fetchProfile, selectProfile} from './stores/profile';
+import {fetchMessageGroups, selectMessageGroups} from './stores/messageGroups';
+import {useAppDispatch, useAppSelector} from './hooks';
+import {labelsPieChartHeight, labelsPieChartNumLabels} from './constants';
 
 function App() {
   const [selectedLabel, setSelectedLabel] = useState('');
@@ -43,7 +34,7 @@ function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    useFetchProfile(dispatch);
+    dispatch(fetchProfile());
     dispatch(fetchLabels());
     dispatch(fetchFilters());
   }, []);
@@ -55,8 +46,8 @@ function App() {
   const labels = useAppSelector(selectUserLabels);
   const labelsStatus = useAppSelector((state) => state.labels.status);
 
-  const profile = useAppSelector((state) => state.profile);
-  const profileStatus = profile.status;
+  const profile = useAppSelector(selectProfile);
+  const profileStatus = useAppSelector((state) => profile.status);
 
   const filters = useAppSelector(selectFilters);
   const filtersStatus = useAppSelector((state) => state.filters.status);
@@ -132,7 +123,7 @@ function App() {
 
   const renderFilters = () => {
     const selectedLabelFilters = filters.filter(filter => filter.action.addLabelIds.includes(selectedLabel));
-    return <FilterTable filters={selectedLabelFilters} />;
+    return <FilterList filters={selectedLabelFilters} />;
   };
 
   const renderMessages = () => {

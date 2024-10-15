@@ -5,8 +5,19 @@ import {
   createSlice
 } from '@reduxjs/toolkit';
 import type {PayloadAction} from '@reduxjs/toolkit';
-import type {Label} from './types';
 import type {RootState} from '../../store';
+
+export type Label = {
+  id: string,
+  name: string,
+  type: 'user' | 'system',
+  threadsTotal: number,
+  color?: {
+    textColor: string,
+    backgroundColor: string
+  }
+};
+
 
 const labelsAdapter = createEntityAdapter<Label>({
   sortComparer: (a, b) => b.threadsTotal - a.threadsTotal

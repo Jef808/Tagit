@@ -1,5 +1,5 @@
-export type {Label} from './types';
 export {
+  type Label,
   default as labelsReducer,
   createLabel,
   fetchLabels,
