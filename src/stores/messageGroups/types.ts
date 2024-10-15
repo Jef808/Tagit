@@ -1,5 +1,4 @@
 export type MessageGroup = {
-  fromHeader: string,
-  size: number,
-  labelled: boolean
+  id: string;
+  count: number;
 };

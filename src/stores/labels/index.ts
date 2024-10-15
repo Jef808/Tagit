@@ -1,9 +1,9 @@
 export type {Label} from './types';
 export {
   default as labelsReducer,
-  pushLabel,
-  setLabelsLoading,
-  loadLabelsSuccess,
-  loadLabelsFailure,
-  resetLabels
+  createLabel,
+  fetchLabels,
+  selectLabels,
+  selectLabelById,
+  selectUserLabels
 } from './labelsSlice';

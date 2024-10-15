@@ -2,15 +2,14 @@ import {useEffect, useState} from 'react';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import {
-  FilterTable,
+  Profile,
   LabelList,
   LabelsPieChart,
-  Profile,
+  LabelFormPopup,
+  FilterTable,
   MessageGroupList,
-  LabelFormPopup
 } from './components';
 import {
-  useCreateLabel,
   useCreateFilter,
   useFetchProfile,
   useFetchLabels,
@@ -23,6 +22,12 @@ import {
   selectMessageGroups,
   selectMessageGroupById
 } from './stores/messageGroups';
+import {
+  createLabel,
+  fetchLabels,
+  selectUserLabels,
+  selectLabelById
+} from './stores/labels';
 import {
   labelsPieChartHeight,
   labelsPieChartNumLabels,
@@ -39,7 +44,7 @@ function App() {
 
   useEffect(() => {
     useFetchProfile(dispatch);
-    useFetchLabels(dispatch);
+    dispatch(fetchLabels());
     useFetchFilters(dispatch);
   }, []);
 
@@ -47,7 +52,7 @@ function App() {
     dispatch(fetchMessageGroups());
   }, []);
 
-  const labels = useAppSelector((state) => state.labels.labels);
+  const labels = useAppSelector(selectUserLabels);
   const labelsStatus = useAppSelector((state) => state.labels.status);
 
   const profile = useAppSelector((state) => state.profile);
@@ -80,8 +85,7 @@ function App() {
     try {
       let label = labels.find(label => label.name === labelName);
       if (!label) {
-        label = await useCreateLabel(dispatch, labelName);
-        // useFetchLabels(dispatch);
+        dispatch(createLabel(labelName));
       }
       let filter = filters.find(filter => (
         filter.criteria.from.includes(selectedMessageEmail) && filter.action.addLabelIds.includes(label.id)
@@ -150,17 +154,23 @@ function App() {
   };
 
   return (
-    <Container maxWidth="md">
-      {isLabelFormOpen && <LabelFormPopup
-        displayName={selectedMessageDisplayName}
-        email={selectedMessageEmail}
-        open={isLabelFormOpen}
-        onClose={handleCloseLabelForm}
-        onSubmit={handleLabelFormSubmit}
-      />}
+    <Container
+      maxWidth="md"
+    >
+      {isLabelFormOpen && (
+        <LabelFormPopup
+          displayName={selectedMessageDisplayName}
+          email={selectedMessageEmail}
+          open={isLabelFormOpen}
+          onClose={handleCloseLabelForm}
+          onSubmit={handleLabelFormSubmit}
+        />
+      )}
       {renderMessages()}
       {renderPieChart()}
-      <Stack direction="row">
+      <Stack
+        direction="row"
+      >
         {renderLabels()}
         {renderFilters()}
       </Stack>
