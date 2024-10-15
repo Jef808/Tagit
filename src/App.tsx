@@ -10,29 +10,29 @@ import {
   MessageGroupList,
 } from './components';
 import {
-  useCreateFilter,
   useFetchProfile,
-  useFetchLabels,
-  useFetchFilters,
   useAppDispatch,
   useAppSelector
 } from './hooks';
 import {
   fetchMessageGroups,
   selectMessageGroups,
-  selectMessageGroupById
 } from './stores/messageGroups';
 import {
   createLabel,
   fetchLabels,
   selectUserLabels,
-  selectLabelById
 } from './stores/labels';
+import {
+  createFilter,
+  fetchFilters,
+  selectFilters,
+  selectFiltersByLabel
+} from './stores/filters';
 import {
   labelsPieChartHeight,
   labelsPieChartNumLabels,
 } from './constants';
-import './App.css';
 
 function App() {
   const [selectedLabel, setSelectedLabel] = useState('');
@@ -45,7 +45,7 @@ function App() {
   useEffect(() => {
     useFetchProfile(dispatch);
     dispatch(fetchLabels());
-    useFetchFilters(dispatch);
+    dispatch(fetchFilters());
   }, []);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ function App() {
   const profile = useAppSelector((state) => state.profile);
   const profileStatus = profile.status;
 
-  const filters = useAppSelector((state) => state.filters.filters);
+  const filters = useAppSelector(selectFilters);
   const filtersStatus = useAppSelector((state) => state.filters.status);
 
   const messageGroups = useAppSelector(selectMessageGroups);
@@ -91,15 +91,13 @@ function App() {
         filter.criteria.from.includes(selectedMessageEmail) && filter.action.addLabelIds.includes(label.id)
       ));
       if (!filter) {
-        filter = await useCreateFilter(dispatch, {email: selectedMessageEmail, labelId: label.id});
-        // useFetchFilters(dispatch);
+        dispatch(createFilter({email: selectedMessageEmail, labelId: label.id}));
       }
-      await useApplyLabel(dispatch, {labelId: label.id, selectedMessageEmail});
+      // await useApplyLabel(dispatch, {labelId: label.id, selectedMessageEmail});
       console.log('Form submitted:', JSON.stringify({label, filter}, null, 2));
     } catch (err) {
       console.error(err);
     }
-    console.log(labelName);
   };
 
   const renderProfile = () => {
@@ -154,9 +152,7 @@ function App() {
   };
 
   return (
-    <Container
-      maxWidth="md"
-    >
+    <Container maxWidth="md">
       {isLabelFormOpen && (
         <LabelFormPopup
           displayName={selectedMessageDisplayName}
@@ -168,9 +164,7 @@ function App() {
       )}
       {renderMessages()}
       {renderPieChart()}
-      <Stack
-        direction="row"
-      >
+      <Stack direction="row">
         {renderLabels()}
         {renderFilters()}
       </Stack>

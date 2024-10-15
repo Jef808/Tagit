@@ -21,3 +21,8 @@ export type Filter = {
   criteria: Criteria,
   action: Action
 };
+
+export type CreateFilterParams = {
+  email: string,
+  labelId: string
+};

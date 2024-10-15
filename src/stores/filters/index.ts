@@ -1,9 +1,9 @@
 export type {Action, Criteria, Filter} from './types';
 export {
   default as filtersReducer,
-  pushFilter,
-  setFiltersLoading,
-  loadFiltersSuccess,
-  loadFiltersFailure,
-  resetFilters
+  createFilter,
+  fetchFilters,
+  selectFilters,
+  selectFilterById,
+  selectFiltersByLabel
 } from './filtersSlice';

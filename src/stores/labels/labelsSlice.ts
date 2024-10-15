@@ -12,12 +12,10 @@ const labelsAdapter = createEntityAdapter<Label>({
   sortComparer: (a, b) => b.threadsTotal - a.threadsTotal
 });
 
-const initialState = labelsAdapter.getInitialState({
-  status: 'idle'
-});
+const initialState = labelsAdapter.getInitialState({status: 'idle'});
 
 export const fetchLabels = createAsyncThunk('labels/fetchLabels', async () => {
-  return await fetch(`http://localhost:3030/labels`).then(res => res.json());
+  return await fetch('http://localhost:3030/labels').then(res => res.json());
 });
 
 export const createLabel = createAsyncThunk('labels/createLabel', async (name: string) => {
