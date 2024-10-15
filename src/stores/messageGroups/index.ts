@@ -1,5 +1,5 @@
-export type {MessageGroup} from './types';
 export {
+  type MessageGroup,
   default as messageGroupsReducer,
   fetchMessageGroups,
   messageGroupRemoved,

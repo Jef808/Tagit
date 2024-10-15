@@ -1,6 +1,6 @@
 import {gmail_v1} from 'googleapis';
 
-export type GetMessagesProps = {
+export type GetMessagesParams = {
     pageToken?: string,
     q?: string
 };
@@ -46,7 +46,7 @@ export async function getNumMessagesFrom(gmail: gmail_v1.Gmail, email: string) {
     return result;
 }
 
-export async function getFilteredMessages(gmail: gmail_v1.Gmail, {pageToken, q}: GetMessagesProps) {
+export async function getFilteredMessages(gmail: gmail_v1.Gmail, {pageToken, q}: GetMessagesParams) {
     const params = {
         userId: 'me',
         pageToken: pageToken || '',

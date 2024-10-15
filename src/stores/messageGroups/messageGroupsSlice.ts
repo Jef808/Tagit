@@ -1,7 +1,11 @@
 import {createAsyncThunk, createEntityAdapter, createSlice} from '@reduxjs/toolkit';
 import type {PayloadAction} from '@reduxjs/toolkit';
-import type {MessageGroup} from './types';
 import type {RootState} from '../../store';
+
+export type MessageGroup = {
+  id: string;
+  count: number;
+};
 
 const messageGroupsAdapter = createEntityAdapter<MessageGroup>({
   sortComparer: (a, b) => b.count - a.count

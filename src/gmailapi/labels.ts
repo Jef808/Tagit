@@ -1,6 +1,11 @@
 import {gmail_v1} from 'googleapis';
 import {getFilteredMessages} from './messages';
 
+type ApplyLabelParams = {
+    labelId: string,
+    email: string
+};
+
 async function getLabel(gmail: gmail_v1.Gmail, id: string) {
     const res = await gmail.users.labels.get({userId: 'me', id});
     return res.data;
@@ -16,12 +21,7 @@ export async function getLabels(gmail: gmail_v1.Gmail) {
     return finalResult;
 }
 
-type ApplyLabelOptions = {
-    labelId: string,
-    email: string
-};
-
-export async function applyLabel(gmail: gmail_v1.Gmail, {labelId, email}: ApplyLabelOptions) {
+export async function applyLabel(gmail: gmail_v1.Gmail, {labelId, email}: ApplyLabelParams) {
     const batchSize = 1000;
     const messageIds = [];
     let pageToken = '';
