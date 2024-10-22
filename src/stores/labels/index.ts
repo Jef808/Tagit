@@ -3,7 +3,10 @@ export {
   default as labelsReducer,
   createLabel,
   fetchLabels,
+  setSelectedLabel,
   selectLabels,
   selectLabelById,
-  selectUserLabels
+  selectUserLabels,
+  selectLabelsStatus,
+  selectSelectedLabel
 } from './labelsSlice';

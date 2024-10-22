@@ -2,5 +2,6 @@ export {
   type Profile,
   default as profileReducer,
   fetchProfile,
-  selectProfile
+  selectProfile,
+  selectProfileStatus
 } from './profileSlice';

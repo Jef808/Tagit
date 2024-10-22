@@ -18,12 +18,14 @@ export type Label = {
   }
 };
 
-
 const labelsAdapter = createEntityAdapter<Label>({
   sortComparer: (a, b) => b.threadsTotal - a.threadsTotal
 });
 
-const initialState = labelsAdapter.getInitialState({status: 'idle'});
+const initialState = labelsAdapter.getInitialState({
+  status: 'idle',
+  selectedLabel: ''
+});
 
 export const fetchLabels = createAsyncThunk('labels/fetchLabels', async () => {
   return await fetch('http://localhost:3030/labels').then(res => res.json());
@@ -42,7 +44,11 @@ export const createLabel = createAsyncThunk('labels/createLabel', async (name: s
 export const labelsSlice = createSlice({
   name: 'labels',
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedLabel: (state, action: PayloadAction<string>) => {
+      state.selectedLabel = action.payload;
+    }
+  },
   extraReducers: builder => {
     builder
       .addCase(fetchLabels.pending, (state) => {
@@ -61,14 +67,26 @@ export const labelsSlice = createSlice({
   }
 });
 
-export default labelsSlice.reducer;
+export const {setSelectedLabel} = labelsSlice.actions;
 
 export const {
   selectAll: selectLabels,
   selectById: selectLabelById
 } = labelsAdapter.getSelectors<RootState>(state => state.labels);
 
+export const selectLabelsStatus = createSelector(
+  (state: RootState) => state.labels,
+  labels => labels.status
+);
+
 export const selectUserLabels = createSelector(
   selectLabels,
   labels => labels.filter(({type}) => type === 'user')
 );
+
+export const selectSelectedLabel = createSelector(
+  (state: RootState) => state.labels,
+  labels => labels.selectedLabel
+);
+
+export default labelsSlice.reducer;

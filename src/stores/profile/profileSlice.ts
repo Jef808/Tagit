@@ -44,6 +44,11 @@ export const profileSlice = createSlice({
 
 export default profileSlice.reducer;
 
+export const selectProfileStatus = createSelector(
+  (state: RootState) => state.profile,
+  profile => profile.status
+);
+
 export const selectProfile = createSelector(
   (state: RootState) => state.profile,
   ({emailAddress, threadsTotal}) => ({emailAddress, threadsTotal})

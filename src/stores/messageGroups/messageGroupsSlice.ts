@@ -1,10 +1,17 @@
-import {createAsyncThunk, createEntityAdapter, createSlice} from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createEntityAdapter,
+  createSelector,
+  createSlice
+} from '@reduxjs/toolkit';
 import type {PayloadAction} from '@reduxjs/toolkit';
 import type {RootState} from '../../store';
+import {type Filter, createFilter} from '../../stores/filters';
 
 export type MessageGroup = {
   id: string;
   count: number;
+  labelled: boolean;
 };
 
 const messageGroupsAdapter = createEntityAdapter<MessageGroup>({
@@ -27,7 +34,8 @@ export const fetchMessageGroups = createAsyncThunk('messageGroups/fetchMessageGr
 
   const messageGroups = Object.entries(messageGroupsRes).map(([fromHeader, count]) => ({
     id: fromHeader,
-    count
+    count,
+    labelled: false
   } as MessageGroup));
 
   return {
@@ -36,13 +44,25 @@ export const fetchMessageGroups = createAsyncThunk('messageGroups/fetchMessageGr
   };
 });
 
+export const applyLabel = createAsyncThunk('messageGroups/applyLabel', async (payload: {id: string, labelId: string}) => {
+  await fetch('http://localhost:3030/messages/label', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(payload)
+  });
+  return payload.id;
+});
+
 const messageGroupsSlice = createSlice({
   name: 'messageGroups',
   initialState,
   reducers: {
-    messageGroupRemoved: (state, action: PayloadAction<string>) => {
-      messageGroupsAdapter.removeOne(state, action.payload);
-    },
+    setMessageGroupsFiltered: (state, action: PayloadAction<string[]>) => {
+      messageGroupsAdapter.updateMany(
+        state,
+        action.payload.map(id => ({id, changes: {labelled: true}}))
+      );
+    }
   },
   extraReducers: builder => {
     builder
@@ -57,17 +77,41 @@ const messageGroupsSlice = createSlice({
       })
       .addCase(fetchMessageGroups.rejected, (state) => {
         state.status = 'failed';
+      })
+      .addCase(applyLabel.fulfilled, (state, action: PayloadAction<string>) => {
+        messageGroupsAdapter.updateOne(state, {id: action.payload, changes: {labelled: true}});
       });
   }
 });
 
-export const {
-  messageGroupRemoved,
-} = messageGroupsSlice.actions;
-
 export default messageGroupsSlice.reducer;
+
+export const {setMessageGroupsFiltered} = messageGroupsSlice.actions;
 
 export const {
   selectAll: selectMessageGroups,
   selectById: selectMessageGroupById
 } = messageGroupsAdapter.getSelectors<RootState>(state => state.messageGroups);
+
+export const selectMessageGroupsStatus = createSelector(
+  (state: RootState) => state.messageGroups,
+  messageGroups => messageGroups.status
+);
+
+export const selectMessageGroupsNextPageToken = createSelector(
+  (state: RootState) => state.messageGroups,
+  messageGroups => messageGroups.nextPageToken
+);
+
+export const selectUnlabelledMessageGroups = createSelector(
+  selectMessageGroups,
+  messageGroups => messageGroups.filter(msg => !msg.labelled)
+);
+
+export const selectMessageGroupsByEmail = createSelector(
+  selectMessageGroups,
+  (_: RootState, email: string) => email,
+  (messageGroups, email) => {
+    return messageGroups.filter(({id}) => id.includes(email));
+  }
+);

@@ -12,7 +12,6 @@ type LabelFormPopupProps = {
   email: string,
   open: boolean,
   onClose: () => void,
-  onSubmit: (data: FormData) => void,
 };
 
 export const LabelFormPopup: FC<LabelFormPopupProps> = ({displayName, email, open, onClose, onSubmit}) => (

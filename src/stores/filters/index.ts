@@ -5,5 +5,6 @@ export {
   fetchFilters,
   selectFilters,
   selectFilterById,
+  selectFiltersStatus,
   selectFiltersByLabel
 } from './filtersSlice';

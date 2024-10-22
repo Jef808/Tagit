@@ -1,13 +1,18 @@
-import type {FC} from 'react';
-import type {Profile} from '../stores/profile';
+import {type FC, Suspense} from 'react';
+import {
+  type Profile,
+  selectProfile,
+  selectProfileStatus
+} from '../stores/profile';
+import {useAppSelector} from '../hooks';
 
-export const Profile: FC<Profile> = ({
-  emailAddress,
-  threadsTotal
-}: Profile) => {
+export const Profile: FC = () => {
+  const {emailAddress, threadsTotal} = useAppSelector(selectProfile);
   return (
-    <div>
-      <h2>{emailAddress}</h2>
-    </div>
+    <Suspense fallback="Loading...">
+      <div>
+        <h2>{emailAddress}</h2>
+      </div>
+    </Suspense>
   );
 }

@@ -15,7 +15,8 @@ authenticate({
     scopes: [
       'https://www.googleapis.com/auth/gmail.readonly',
       'https://www.googleapis.com/auth/gmail.labels',
-      'https://www.googleapis.com/auth/gmail.settings.basic'
+      'https://www.googleapis.com/auth/gmail.settings.basic',
+      'https://www.googleapis.com/auth/gmail.modify'
     ]
 }).then((auth) => {
     google.options({auth});
@@ -138,9 +139,9 @@ app.get('/messageGroups/', async (_: Request, res: Response) => {
  * }
  */
 app.post('/messages/label', async (req: Request, res: Response) => {
-  console.log('POST MESSAGES LABEL REQUEST');
+  console.log('POST MESSAGES LABEL REQUEST', JSON.stringify(req.body, null, 2));
   try {
-    const {labelId, email} = req.body;
+    const {labelId, id: email} = req.body;
     await applyLabel(gmail, {labelId, email});
     res.status(201);
   } catch (err) {
