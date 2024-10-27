@@ -1,4 +1,4 @@
-import {type FC, Suspense} from 'react';
+import {type FC, useEffect, Suspense} from 'react';
 import {
   type Profile,
   selectProfile,
